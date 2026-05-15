@@ -3,7 +3,7 @@
 > **Genomic Adaptation in Zebu Cattle: A Multi-Assembly Graph Approach**
 
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen)]()
-[![Collaboration](https://img.shields.io/badge/Collaboration-ETH%20Zurich%20%26%20USP-blue)]()
+[![Collaboration](https://img.shields.io/badge/Collaboration-USP%20%26%20ETH%20Zurich-blue)]()
 [![Focus](https://img.shields.io/badge/Focus-Zebu%20Genomics-orange)]()
 [![Language](https://img.shields.io/badge/Language-English-lightgrey)]()
 
@@ -137,10 +137,10 @@ COWADAPT is a joint research initiative between:
 
 | Institution | Country | Role |
 |---|---|---|
+| **USP** (University of São Paulo) | Brazil | Host institution; zebu breed expertise, phenotypic data, population genomics |
 | **ETH Zurich** (Swiss Federal Institute of Technology) | Switzerland | Lead coordination, bioinformatics, pangenomics |
-| **USP** (University of São Paulo) | Brazil | Zebu breed expertise, phenotypic data, population genomics |
 
-This collaboration combines cutting-edge computational genomics expertise from ETH Zurich with deep knowledge of zebu cattle biology and extensive biological resources from USP — Brazil's largest public university and one of the world's leading research institutions.
+This collaboration combines deep knowledge of zebu cattle biology and extensive biological resources from USP — Brazil's largest public university and one of the world's leading research institutions — with cutting-edge computational genomics expertise from ETH Zurich.
 
 The COWADAPT model has the potential to serve as a **blueprint for future reference genome design** in any species characterized by divergent subpopulations (e.g., other livestock, domesticated animals, and conservation genomics projects).
 
