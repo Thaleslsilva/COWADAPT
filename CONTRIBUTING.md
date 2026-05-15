@@ -136,4 +136,4 @@ We are excited to collaborate with researchers from all backgrounds to advance o
 
 *Thank you for helping make COWADAPT better!*
 
-*— The COWADAPT Team (ETH Zurich × UNESP)*
+*— The COWADAPT Team (ETH Zurich × USP)*
