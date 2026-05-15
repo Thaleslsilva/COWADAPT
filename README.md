@@ -3,7 +3,7 @@
 > **Genomic Adaptation in Zebu Cattle: A Multi-Assembly Graph Approach**
 
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen)]()
-[![Collaboration](https://img.shields.io/badge/Collaboration-ETH%20Zurich%20%26%20UNESP-blue)]()
+[![Collaboration](https://img.shields.io/badge/Collaboration-ETH%20Zurich%20%26%20USP-blue)]()
 [![Focus](https://img.shields.io/badge/Focus-Zebu%20Genomics-orange)]()
 [![Language](https://img.shields.io/badge/Language-English-lightgrey)]()
 
@@ -138,9 +138,9 @@ COWADAPT is a joint research initiative between:
 | Institution | Country | Role |
 |---|---|---|
 | **ETH Zurich** (Swiss Federal Institute of Technology) | Switzerland | Lead coordination, bioinformatics, pangenomics |
-| **UNESP** (São Paulo State University) | Brazil | Zebu breed expertise, phenotypic data, population genomics |
+| **USP** (University of São Paulo) | Brazil | Zebu breed expertise, phenotypic data, population genomics |
 
-This collaboration combines cutting-edge computational genomics expertise from ETH Zurich with deep knowledge of zebu cattle biology and extensive biological resources from UNESP — one of Brazil's largest agricultural research universities.
+This collaboration combines cutting-edge computational genomics expertise from ETH Zurich with deep knowledge of zebu cattle biology and extensive biological resources from USP — Brazil's largest public university and one of the world's leading research institutions.
 
 The COWADAPT model has the potential to serve as a **blueprint for future reference genome design** in any species characterized by divergent subpopulations (e.g., other livestock, domesticated animals, and conservation genomics projects).
 
@@ -193,7 +193,7 @@ If you use data, code, or findings from COWADAPT in your research, please cite:
 ```bibtex
 @misc{cowadapt2024,
   title   = {COWADAPT: Genomic Adaptation in Zebu Cattle via Multi-Assembly Graph},
-  author  = {COWADAPT Consortium (ETH Zurich and UNESP)},
+  author  = {COWADAPT Consortium (USP and ETH Zurich)},
   year    = {2024},
   url     = {https://github.com/Thaleslsilva/COWADAPT}
 }
@@ -211,5 +211,5 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 <p align="center">
   <em>COWADAPT — Advancing our understanding of bovine adaptation through pangenomics</em><br>
-  <em>ETH Zurich × UNESP</em>
+  <em>USP × ETH Zurich</em>
 </p>
