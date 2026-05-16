@@ -99,11 +99,11 @@ Unlike a linear reference (a single sequence), a **pangenome graph** encodes the
 
 ### Phase 2 — Multi-Assembly Graph Construction
 - Assembly of individual genomes using state-of-the-art assemblers (e.g., Hifiasm)
-- Graph construction using tools such as **Minigraph-Cactus** or **PGGB**
+- Graph construction using tools such as **Minigraph-Cactus** or **Minigraph**
 - Quality assessment and graph annotation
 
 ### Phase 3 — Variant Calling and Genotyping
-- Short-read alignment to the pangenome graph (e.g., using **vg giraffe**)
+- Long-read alignment to the pangenome graph (e.g., using **vg giraffe**)
 - Structural variant calling and genotyping across the population panel
 - Comparison with linear-reference-based results to quantify improvements
 
@@ -191,10 +191,10 @@ We are committed to fostering an inclusive, respectful, and collaborative scient
 If you use data, code, or findings from COWADAPT in your research, please cite:
 
 ```bibtex
-@misc{cowadapt2024,
-  title   = {COWADAPT: Genomic Adaptation in Zebu Cattle via Multi-Assembly Graph},
+@misc{cowadapt2021,
+  title   = {COWADAPT: Genetic variants for cattle adaptability to harsh environments uncovered through a bovine multi-assembly graph},
   author  = {COWADAPT Consortium (USP and ETH Zurich)},
-  year    = {2024},
+  year    = {2021},
   url     = {https://github.com/Thaleslsilva/COWADAPT}
 }
 ```
