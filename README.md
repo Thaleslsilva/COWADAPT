@@ -1,6 +1,6 @@
 # COWADAPT
 
-> **Genomic Adaptation in Zebu Cattle: A Multi-Assembly Graph Approach**
+> **Genomic Adaptation in Indicine Cattle: A Multi-Assembly Graph Approach**
 
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen)]()
 [![Collaboration](https://img.shields.io/badge/Collaboration-USP%20%26%20ETH%20Zurich-blue)]()
