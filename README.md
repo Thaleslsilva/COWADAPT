@@ -95,7 +95,7 @@ Unlike a linear reference (a single sequence), a **pangenome graph** encodes the
 ### Phase 1 — Data Collection and Quality Control
 - Acquisition of high-quality, long-read genome assemblies (PacBio HiFi / ONT) from target zebu breeds
 - Short-read whole-genome sequencing (WGS) data for large population panels
-- Phenotypic data for traits of interest (heat tolerance, tick resistance, etc.)
+- Phenotypic data for traits of interest (heat tolerance, disease resistance, etc.)
 
 ### Phase 2 — Multi-Assembly Graph Construction
 - Assembly of individual genomes using state-of-the-art assemblers (e.g., Hifiasm)
