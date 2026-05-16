@@ -23,6 +23,7 @@
 - [How to Contribute](#how-to-contribute)
 - [Citation](#citation)
 - [License](#license)
+- [Funding](#funding)
 
 ---
 
@@ -206,6 +207,13 @@ If you use data, code, or findings from COWADAPT in your research, please cite:
 ## License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Funding
+
+This project is financially supported by São Paulo Research Foundation (FAPESP - Grants #2021/03101-9, #2023/06637-2 and #2024/18544-1).
+
 
 ---
 
