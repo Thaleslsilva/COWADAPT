@@ -218,6 +218,6 @@ This project is financially supported by São Paulo Research Foundation (FAPESP 
 ---
 
 <p align="center">
-  <em>COWADAPT — Genetic variants for cattle adaptability to harsh environments uncovered through a bovine multi-assembly graph</em><br>
+  <em>COWADAPT — 2026</em><br>
   <em>USP × ETH Zurich</em>
 </p>
