@@ -219,5 +219,5 @@ This project is financially supported by São Paulo Research Foundation (FAPESP 
 
 <p align="center">
   <em>COWADAPT — 2026</em><br>
-  <em>USP × ETH Zurich</em>
+  <em>VNP - FMVZ/USP & Animal Genomics | ETH Zurich</em>
 </p>
