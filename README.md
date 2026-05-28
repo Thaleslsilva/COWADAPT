@@ -2,6 +2,7 @@
 
 > **Genomic Adaptation in Indicine Cattle: A Multi-Assembly Graph Approach**
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen)]()
 [![Collaboration](https://img.shields.io/badge/Collaboration-USP%20%26%20ETH%20Zurich-blue)]()
 [![Focus](https://img.shields.io/badge/Focus-Zebu%20Genomics-orange)]()
@@ -18,10 +19,13 @@
 - [Key Research Objectives](#key-research-objectives)
 - [Methodology](#methodology)
 - [Traits of Interest](#traits-of-interest)
-- [Collaboration](#collaboration)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
 - [Repository Structure](#repository-structure)
+- [Collaboration](#collaboration)
 - [How to Contribute](#how-to-contribute)
 - [Citation](#citation)
+- [Contact and Support](#contact-and-support)
 - [License](#license)
 - [Funding](#funding)
 
@@ -118,6 +122,8 @@ Unlike a linear reference (a single sequence), a **pangenome graph** encodes the
 - Integration with transcriptomic (RNA-seq) data
 - Comparison with known adaptive loci in related species
 
+For detailed methods, see [docs/METHODOLOGY.md](docs/METHODOLOGY.md).
+
 ---
 
 ## Traits of Interest
@@ -132,18 +138,56 @@ Unlike a linear reference (a single sequence), a **pangenome graph** encodes the
 
 ---
 
-## Collaboration
+## Installation
 
-COWADAPT is a joint research initiative between:
+### Requirements
 
-| Institution | Country | Role |
-|---|---|---|
-| **USP** (University of São Paulo) | Brazil | Host institution; zebu breed expertise, phenotypic data, population genomics |
-| **ETH Zurich** (Swiss Federal Institute of Technology) | Switzerland | Lead coordination, bioinformatics, pangenomics |
+- Linux or macOS
+- Bash 4.0+
+- Python 3.8+
+- Conda (recommended) or pip
 
-This collaboration combines deep knowledge of zebu cattle biology and extensive biological resources from USP — Brazil's largest public university and one of the world's leading research institutions — with cutting-edge computational genomics expertise from ETH Zurich.
+### Quick Setup
 
-The COWADAPT model has the potential to serve as a **blueprint for future reference genome design** in any species characterized by divergent subpopulations (e.g., other livestock, domesticated animals, and conservation genomics projects).
+```bash
+# 1. Clone the repository
+git clone https://github.com/Thaleslsilva/COWADAPT.git
+cd COWADAPT
+
+# 2. Set up the SV Catalog pipeline environment
+cd pipelines/SV_Catalog
+bash src/utils/setup_reference_data.sh
+
+# 3. Edit the central configuration file with your data paths
+nano config/pipeline.config
+```
+
+For full installation instructions (dependencies, HPC setup, reference data), see [docs/INSTALLATION.md](docs/INSTALLATION.md).
+
+---
+
+## Quick Start
+
+```bash
+# Initialize the pipeline and validate your environment
+bash pipelines/SV_Catalog/src/utils/init_pipeline.sh
+
+# Step 1: Call structural variants with Sniffles2
+bash pipelines/SV_Catalog/src/01_sv_calling/run_sniffles2_calling.sh
+
+# Step 2: Call structural variants with SVIM (second caller)
+bash pipelines/SV_Catalog/src/01_sv_calling/run_svim_calling.sh
+
+# Step 3: Merge calls from both callers using SURVIVOR
+bash pipelines/SV_Catalog/src/02_sv_merge/run_survivor_merge.sh
+
+# Continue through steps 03-07 — see docs/USAGE.md for the full walkthrough
+```
+
+For step-by-step usage instructions and examples, see:
+- [docs/USAGE.md](docs/USAGE.md) — practical usage guide
+- [examples/](examples/) — self-contained runnable examples
+- [pipelines/SV_Catalog/docs/USAGE.md](pipelines/SV_Catalog/docs/USAGE.md) — detailed pipeline documentation
 
 ---
 
@@ -151,39 +195,55 @@ The COWADAPT model has the potential to serve as a **blueprint for future refere
 
 ```
 COWADAPT/
-├── README.md                  # Project overview (this file)
-├── docs/                      # Detailed documentation
-│   ├── background.md          # Extended scientific background
-│   ├── methodology.md         # Detailed methods and protocols
-│   └── glossary.md            # Key terms and definitions
-├── pipelines/                 # Bioinformatic pipelines and scripts
-│   ├── graph_construction/    # Scripts for pangenome graph building
-│   ├── variant_calling/       # SV and SNP calling workflows
-│   └── gwas/                  # Association analysis scripts
-├── results/                   # Summary results and figures
-│   ├── figures/               # Publication-quality figures
-│   └── tables/                # Summary statistics and tables
-├── data/                      # Data manifests and metadata (no raw data)
-│   └── metadata/              # Sample metadata and phenotype files
-└── CONTRIBUTING.md            # Contribution guidelines
+├── README.md                         # Project overview (this file)
+├── CONTRIBUTING.md                   # Contribution guidelines
+├── CHANGELOG.md                      # Version history
+├── LICENSE                           # MIT License
+├── .gitignore                        # Git ignore rules
+├── docs/                             # Project-level documentation
+│   ├── INSTALLATION.md               # Setup and requirements
+│   ├── USAGE.md                      # Usage guide and examples
+│   ├── METHODOLOGY.md                # Detailed methods and protocols
+│   ├── background.md                 # Extended scientific background
+│   └── glossary.md                   # Key terms and definitions
+├── pipelines/                        # Bioinformatic pipelines and scripts
+│   ├── genome_assembly/              # De novo genome assembly (HiFiasm, Purge Dups)
+│   ├── quality_control/              # Long-read QC (NanoComp, Porechop, Seqkit)
+│   ├── sequence_alignment/           # Read alignment (Minimap2)
+│   ├── variant_calling/              # SV and SNP calling workflows
+│   ├── graph_construction/           # Pangenome graph construction
+│   └── SV_Catalog/                   # Main 7-step SV catalog pipeline
+│       ├── config/pipeline.config    # Central configuration file
+│       ├── src/                      # Pipeline source scripts (steps 01-07)
+│       └── docs/                     # Pipeline-specific documentation
+├── examples/                         # Self-contained runnable examples
+├── data/                             # Data manifests and metadata (no raw data)
+└── results/                          # Summary outputs, figures, and tables
 ```
+
+---
+
+## Collaboration
+
+COWADAPT is a joint research initiative between:
+
+| Institution | Country | Role |
+|---|---|---|
+| **USP** (University of Sao Paulo) | Brazil | Host institution; zebu breed expertise, phenotypic data, population genomics |
+| **ETH Zurich** (Swiss Federal Institute of Technology) | Switzerland | Lead coordination, bioinformatics, pangenomics |
+
+This collaboration combines deep knowledge of zebu cattle biology and extensive biological resources from USP — Brazil's largest public university and one of the world's leading research institutions — with cutting-edge computational genomics expertise from ETH Zurich.
 
 ---
 
 ## How to Contribute
 
-We welcome contributions from the community! Please read our [CONTRIBUTING.md](CONTRIBUTING.md) guidelines before getting started.
-
-### Ways to Contribute
+We welcome contributions from the community! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before getting started.
 
 - **Report issues** — Found a bug or inconsistency? Open an [Issue](../../issues)
 - **Suggest improvements** — Have an idea? Start a [Discussion](../../discussions)
 - **Submit code** — Fork the repository, create a feature branch, and submit a Pull Request
 - **Improve documentation** — Help us make the docs clearer and more comprehensive
-
-### Code of Conduct
-
-We are committed to fostering an inclusive, respectful, and collaborative scientific community. All contributors are expected to uphold these values.
 
 ---
 
@@ -204,6 +264,19 @@ If you use data, code, or findings from COWADAPT in your research, please cite:
 
 ---
 
+## Contact and Support
+
+For questions, bug reports, or collaboration inquiries:
+
+- **GitHub Issues** — [Open an issue](https://github.com/Thaleslsilva/COWADAPT/issues) for bugs or feature requests
+- **GitHub Discussions** — [Start a discussion](https://github.com/Thaleslsilva/COWADAPT/discussions) for questions and ideas
+- **Repository maintainer** — Thales de Lima Silva ([@Thaleslsilva](https://github.com/Thaleslsilva))
+- **Institutional contacts:**
+  - VNP - FMVZ/USP, University of Sao Paulo, Brazil
+  - Animal Genomics Group, ETH Zurich, Switzerland
+
+---
+
 ## License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
@@ -212,8 +285,7 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 ## Funding
 
-This project is financially supported by São Paulo Research Foundation (FAPESP - Grants #2021/03101-9, #2023/06637-2 and #2024/18544-1).
-
+This project is financially supported by Sao Paulo Research Foundation (FAPESP - Grants #2021/03101-9, #2023/06637-2 and #2024/18544-1).
 
 ---
 
