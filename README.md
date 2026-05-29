@@ -8,7 +8,7 @@
 [![Focus](https://img.shields.io/badge/Focus-Zebu%20Genomics-orange)]()
 [![Language](https://img.shields.io/badge/Language-English-lightgrey)]()
 
-![Capa](https://github.com/Thaleslsilva/COWADAPT/cowadapt.png)
+![Capa](https://github.com/Thaleslsilva/COWADAPT/blob/main/cowadapt.png)
 
 ---
 
