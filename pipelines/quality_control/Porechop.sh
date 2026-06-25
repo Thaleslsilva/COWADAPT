@@ -92,25 +92,3 @@ done
 wait
 
 echo "All samples processed successfully!"
-
-# Run Porechop and compression for each file
-for i in "${!FILES[@]}"; do
-  arquivo="${FILES[$i]}"
-  prefixo="${PREFIXES[$i]}"
-
-  # Run Porechop
-  porechop -i "$arquivo" -t 100 -o "${prefixo}_porechop.fq"
-done
-
-# Wait for all Porechop processes to finish
-wait
-
-# Compress output files with gzip
-for prefixo in "${PREFIXES[@]}"; do
-  pigz -p 100 -c "${prefixo}_porechop.fq" > "${prefixo}_porechop.fq.gz"
-done
-
-# Wait for all gzip processes to finish
-wait
-
-echo "Processing completed!"
