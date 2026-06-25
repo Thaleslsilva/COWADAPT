@@ -5,25 +5,59 @@
 ###                           COWADAPT PROJECT
 ### Trim nanopore reads with Porechop v.0.2.4 and compress with gzip
 ###
-### v.24.10.24                                          Thales de Lima Silva
+### v.26.06.25                                          Thales de Lima Silva
 ###
 #############################################################################
 
-# List of prefixes
-PREFIXES=(
-  COWADAPT_012 COWADAPT_001 COWADAPT_015 COWADAPT_018
-  COWADAPT_004 COWADAPT_002 COWADAPT_008 COWADAPT_010
-  COWADAPT_009 COWADAPT_005 COWADAPT_003 COWADAPT_006
-  COWADAPT_020 COWADAPT_023 COWADAPT_017 COWADAPT_019
-  COWADAPT_014 COWADAPT_013 COWADAPT_011 COWADAPT_016
+# Input files
+FILES=(
+  "250415_PAW46500_doradov0.9.6_SUP_simplex.fastq"
+  "250415_PBA89745_doradov0.9.6_SUP_simplex.fastq"
+  ...
 )
 
-# Check if number of files matches number of prefixes
-FILES=(*.fq.gz)
-if [ "${#FILES[@]}" -ne "${#PREFIXES[@]}" ]; then
-  echo "Number of files (.fq.gz) does not match number of provided prefixes."
-  exit 1
+# Output names
+NAMES=(
+  "ONT_001"
+  "ONT_002"
+  ...
+)
+
+# Check consistency
+if [ "${#FILES[@]}" -ne "${#NAMES[@]}" ]; then
+    echo "ERROR: Number of FASTQ files and names do not match."
+    exit 1
 fi
+
+# Number of simultaneous jobs
+MAX_JOBS=10
+
+for i in "${!FILES[@]}"; do
+(
+    infile="${FILES[$i]}"
+    sample="${NAMES[$i]}"
+
+    echo "Processing ${infile} -> ${sample}"
+
+    porechop \
+        -i "${infile}" \
+        -t 10 \
+        -o "${sample}_porechop.fastq"
+
+    pigz -p 10 "${sample}_porechop.fastq"
+
+    echo "Finished ${sample}"
+) &
+
+    while [ "$(jobs -r | wc -l)" -ge "$MAX_JOBS" ]; do
+        sleep 5
+    done
+
+done
+
+wait
+
+echo "All samples processed successfully!"
 
 # Run Porechop and compression for each file
 for i in "${!FILES[@]}"; do
