@@ -35,7 +35,7 @@ FILES=(
 
 # Output names
 NAMES=(
-   "COWADAPT_001"
+  "COWADAPT_001"
   "COWADAPT_002"
   "COWADAPT_003"
   "COWADAPT_004"
