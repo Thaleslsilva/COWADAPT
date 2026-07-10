@@ -43,6 +43,8 @@ COWADAPT proposes a paradigm shift: the construction and use of a **multi-assemb
 
 [![Decoding the Zebu Pangenome](https://youtu.be/ZnCf_NvcKpg?si=UzBAgTWUfyDy_Gxv)](https://youtu.be/ZnCf_NvcKpg?si=UzBAgTWUfyDy_Gxv)
 
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/ZnCf_NvcKpg)](https://www.youtube.com/watch?v=ZnCf_NvcKpg)
+
 ---
 
 ## Scientific Background
