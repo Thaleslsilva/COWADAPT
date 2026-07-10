@@ -41,9 +41,7 @@ The project addresses a fundamental limitation in current livestock genomic stud
 
 COWADAPT proposes a paradigm shift: the construction and use of a **multi-assembly graph** — an advanced pangenome-like reference structure — that integrates multiple high-quality genome assemblies from diverse zebu breeds. This approach enables a more complete and unbiased characterization of genomic variation, paving the way for a deeper understanding of tropical adaptation in cattle.
 
-[![Decoding the Zebu Pangenome](https://youtu.be/ZnCf_NvcKpg?si=UzBAgTWUfyDy_Gxv)](https://youtu.be/ZnCf_NvcKpg?si=UzBAgTWUfyDy_Gxv)
-
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/ZnCf_NvcKpg)](https://www.youtube.com/watch?v=ZnCf_NvcKpg)
+[![Decoding the Zebu Pangenome](https://img.youtube.com/vi/ZnCf_NvcKpg/0.jpg)](https://www.youtube.com/watch?v=ZnCf_NvcKpg)
 
 ---
 
