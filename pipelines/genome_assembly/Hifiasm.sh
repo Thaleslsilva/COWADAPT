@@ -1,34 +1,32 @@
 #!/bin/bash
 
 ################################################################################
-# HiFiasm Long-Read Genome Assembly
+# HiFiasm Long-Read Genome Assembly (batch mode)
 ################################################################################
 #
 # Description:
-#   Performs de novo genome assembly from PacBio HiFi long-read sequencing data
-#   using the HiFiasm assembler.
+#   Performs de novo genome assembly from PacBio HiFi / ONT long-read
+#   sequencing data using the HiFiasm assembler, looping over every filtered
+#   fastq file in READS_DIR.
 #
-# Version: 1.0
+# Version: 2.0
 # Author: Genome Assembly Pipeline
-# Updated: 2026-05-28
+# Updated: 2026-07-23
 #
 # Dependencies:
 #   - hifiasm (v0.19 or later)
 #   - gzip
 #
 # Environment Variables:
-#   READS_DIR   - Directory containing input .fq.gz files (default: ./reads)
-#   SAMPLE_FILE - Input filtered fastq file
+#   READS_DIR   - Directory containing input .fq.gz files
+#                 (default: /home/breeder9/gen_alin_novo/seq_Holanda/2.qc_fastq/Filtered_fq)
 #   OUTPUT_DIR  - Base output directory (default: ./hifiasm_output)
 #
 # Usage:
-#   export READS_DIR="/path/to/reads"
-#   export OUTPUT_DIR="/path/to/output"
-#   ./hifiasm.sh /path/to/sample_filt.fq.gz
+#   OUTPUT_DIR="./hifiasm_output" ./Hifiasm.sh
 #
-#   Or with environment variables:
-#   SAMPLE_FILE="/cluster/work/pausch/thales/KG000421/KG000421_fq/2_filtered_fqs/COWADAPT_004_filt.fq.gz" \
-#   OUTPUT_DIR="/cluster/work/pausch/thales/KG000421/KG000421_fq/4_assembly/hifiasm_output" ./hifiasm.sh
+#   Or overriding defaults:
+#   READS_DIR="/path/to/reads" OUTPUT_DIR="/path/to/output" ./Hifiasm.sh
 #
 ################################################################################
 
@@ -37,27 +35,43 @@ set -euo pipefail
 # Optional: Add custom bin directory to PATH
 export PATH="${HOME}/bin:${PATH}"
 
-# Input sample file (can be passed as argument or environment variable)
-SAMPLE_FILE="${1:-${SAMPLE_FILE:-}}"
+# Directory holding all filtered fastq files to assemble
+READS_DIR="${READS_DIR:-/home/breeder9/gen_alin_novo/seq_Holanda/2.qc_fastq/Filtered_fq}"
 
-if [[ -z "$SAMPLE_FILE" ]]; then
-    echo "ERROR: No input file specified."
-    echo "Usage: $0 <fastq_file>"
+# Base output directory
+OUTPUT_DIR="${OUTPUT_DIR:-./hifiasm_output}"
+
+if [[ ! -d "$READS_DIR" ]]; then
+    echo "ERROR: READS_DIR does not exist: $READS_DIR"
     exit 1
 fi
 
-# Set default directories if not already defined
-OUTPUT_DIR="${OUTPUT_DIR:-.}"
+mkdir -p "$OUTPUT_DIR"
 
-# Extract sample basename
-SAMPLE_NAME=$(basename "$SAMPLE_FILE" _filt.fq.gz)
+# Collect all filtered fastq files (adjust the pattern here if your naming differs)
+shopt -s nullglob
+FASTQ_FILES=("$READS_DIR"/*_filt.fq.gz)
+shopt -u nullglob
 
-# Create output directory
-OUTPUT_PATH="${OUTPUT_DIR}/${SAMPLE_NAME}"
-mkdir -p "$OUTPUT_PATH"
+if [[ ${#FASTQ_FILES[@]} -eq 0 ]]; then
+    echo "ERROR: No *_filt.fq.gz files found in: $READS_DIR"
+    exit 1
+fi
 
-# Run HiFiasm assembly
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting HiFiasm assembly for: $SAMPLE_NAME"
-hifiasm -k 31 -t 32 --ont -o "${OUTPUT_PATH}/${SAMPLE_NAME}.asm" "$SAMPLE_FILE"
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] HiFiasm assembly completed for: $SAMPLE_NAME"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Found ${#FASTQ_FILES[@]} file(s) to assemble in: $READS_DIR"
 
+for SAMPLE_FILE in "${FASTQ_FILES[@]}"; do
+    # Extract sample basename
+    SAMPLE_NAME=$(basename "$SAMPLE_FILE" _filt.fq.gz)
+
+    # Create per-sample output directory
+    OUTPUT_PATH="${OUTPUT_DIR}/${SAMPLE_NAME}"
+    mkdir -p "$OUTPUT_PATH"
+
+    # Run HiFiasm assembly
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting HiFiasm assembly for: $SAMPLE_NAME"
+    hifiasm -k 31 -t 32 --ont -o "${OUTPUT_PATH}/${SAMPLE_NAME}.asm" "$SAMPLE_FILE"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] HiFiasm assembly completed for: $SAMPLE_NAME"
+done
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] All assemblies finished."
