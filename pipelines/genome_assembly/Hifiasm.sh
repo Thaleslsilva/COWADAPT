@@ -28,8 +28,7 @@
 #
 #   Or with environment variables:
 #   SAMPLE_FILE="/cluster/work/pausch/thales/KG000421/KG000421_fq/2_filtered_fqs/COWADAPT_004_filt.fq.gz" \
-#   OUTPUT_DIR="/cluster/work/pausch/thales/KG000421/KG000421_fq/4_assembly/hifiasm_output" \
-#   ./hifiasm.sh
+#   OUTPUT_DIR="/cluster/work/pausch/thales/KG000421/KG000421_fq/4_assembly/hifiasm_output" ./hifiasm.sh
 #
 ################################################################################
 
