@@ -36,7 +36,7 @@ set -euo pipefail
 export PATH="${HOME}/bin:${PATH}"
 
 # Directory holding all filtered fastq files to assemble
-READS_DIR="${READS_DIR:-/home/breeder9/gen_alin_novo/seq_Holanda/2.qc_fastq/Filtered_fq}"
+READS_DIR="${READS_DIR:-/home/2.qc_fastq/Filtered_fq}"
 
 # Base output directory
 OUTPUT_DIR="${OUTPUT_DIR:-./hifiasm_output}"
