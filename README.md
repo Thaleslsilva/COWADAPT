@@ -204,6 +204,7 @@ COWADAPT/
 ├── README.md                         # Project overview (this file)
 ├── CONTRIBUTING.md                   # Contribution guidelines
 ├── CHANGELOG.md                      # Version history
+├── RELEASING.md                      # Release process
 ├── LICENSE                           # MIT License
 ├── .gitignore                        # Git ignore rules
 ├── docs/                             # Project-level documentation
