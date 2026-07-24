@@ -25,7 +25,7 @@ Performs de novo genome assembly from filtered long-read FASTQ files using [HiFi
 
 | Variable | Description | Default |
 |---|---|---|
-| `READS_DIR` | Directory containing input `.fq.gz` files (expects `*_filt.fq.gz`) | `/home/breeder9/gen_alin_novo/seq_Holanda/2.qc_fastq/Filtered_fq` |
+| `READS_DIR` | Directory containing input `.fq.gz` files (expects `*_filt.fq.gz`) | `/home/2.qc_fastq/Filtered_fq` |
 | `OUTPUT_DIR` | Base output directory | `./hifiasm_output` |
 
 **Usage:**
