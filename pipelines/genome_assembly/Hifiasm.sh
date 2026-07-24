@@ -19,7 +19,7 @@
 #
 # Environment Variables:
 #   READS_DIR   - Directory containing input .fq.gz files
-#                 (default: /home/breeder9/gen_alin_novo/seq_Holanda/2.qc_fastq/Filtered_fq)
+#                 (default: /home/2.qc_fastq/Filtered_fq)
 #   OUTPUT_DIR  - Base output directory (default: ./hifiasm_output)
 #
 # Usage:
