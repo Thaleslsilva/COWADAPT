@@ -8,6 +8,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+---
+
+## [0.2.0] — 2026-07-24
+
 ### Added
 - Centralized pipeline configuration system (`pipelines/SV_Catalog/config/pipeline.config`)
 - 7-step SV catalog pipeline for Nellore cattle structural variant analysis
@@ -19,6 +23,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - MIT License
 - .gitignore for bioinformatics workflows
 - examples/ directory with usage demonstrations
+- RELEASING.md documenting the project's release process
 
 ### Changed
 - Refactored all pipeline scripts to use centralized configuration
@@ -43,5 +48,6 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-[Unreleased]: https://github.com/Thaleslsilva/COWADAPT/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Thaleslsilva/COWADAPT/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/Thaleslsilva/COWADAPT/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Thaleslsilva/COWADAPT/releases/tag/v0.1.0
