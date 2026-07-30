@@ -43,8 +43,6 @@
 #
 ################################################################################
 
-set -euo pipefail
-
 # Configuration
 BASE_DIR="${BASE_DIR:-.}"
 GFA_PATTERN_HAP1="${GFA_PATTERN_HAP1:-*.asm.bp.hap1.p_ctg.gfa}"
