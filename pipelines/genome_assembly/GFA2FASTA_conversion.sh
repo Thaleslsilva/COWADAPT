@@ -21,30 +21,33 @@
 #
 # Environment Variables:
 #   BASE_DIR      - Directory containing sample subdirectories (required)
+#   GFA_PATTERN_1CTG - File pattern for Primary contigs (default: *.asm.bp.p_ctg.gfa)
 #   GFA_PATTERN_HAP1 - File pattern for haplotype1 (default: *.asm.bp.hap1.p_ctg.gfa)
 #   GFA_PATTERN_HAP2 - File pattern for haplotype2 (default: *.asm.bp.hap2.p_ctg.gfa)
 #   FORCE_OVERWRITE - Overwrite existing compressed files (default: false)
 #
 # Usage:
-#   export BASE_DIR="/path/to/samples"
-#   ./conv_gfa2fa.sh
+#   export BASE_DIR="/home/breeder9/gen_alin_novo/seq_Holanda/4.genome_assembly/hifiasm_output"
+#   ./GFA2FASTA_conversion.sh
 #
 #   Or with custom patterns:
 #   BASE_DIR="/path/to/samples" \
+#   GFA_PATTERN_1CTG="*.gfa" \
 #   GFA_PATTERN_HAP1="*.hap1.gfa" \
 #   GFA_PATTERN_HAP2="*.hap2.gfa" \
 #   ./conv_gfa2fa.sh
 #
 # Output:
 #   For each sample and haplotype:
-#   - {sample}.hap1.fasta.gz  / {sample}.hap2.fasta.gz  - Compressed FASTA
-#   - {sample}.hap1.fasta.gz.fai / {sample}.hap2.fasta.gz.fai - FASTA index
-#   - {sample}.hap1.fasta.gz.gzi / {sample}.hap2.fasta.gz.gzi - Compressed index
+#   - {sample}.fasta.gz / {sample}.hap1.fasta.gz / {sample}.hap2.fasta.gz  - Compressed FASTA
+#   - {sample}.fasta.gz.fai / {sample}.hap1.fasta.gz.fai / {sample}.hap2.fasta.gz.fai - FASTA index
+#   - {sample}.fasta.gz.gzi / {sample}.hap1.fasta.gz.gzi / {sample}.hap2.fasta.gz.gzi - Compressed index
 #
 ################################################################################
 
 # Configuration
 BASE_DIR="${BASE_DIR:-.}"
+GFA_PATTERN_1CTG="${GFA_PATTERN_1CTG:-*.asm.bp.p_ctg.gfa}"
 GFA_PATTERN_HAP1="${GFA_PATTERN_HAP1:-*.asm.bp.hap1.p_ctg.gfa}"
 GFA_PATTERN_HAP2="${GFA_PATTERN_HAP2:-*.asm.bp.hap2.p_ctg.gfa}"
 FORCE_OVERWRITE="${FORCE_OVERWRITE:-false}"
@@ -55,8 +58,10 @@ if [[ ! -d "$BASE_DIR" ]]; then
 fi
 
 # Counter for processed files
+PROCESSED_1CTG=0
 PROCESSED_HAP1=0
 PROCESSED_HAP2=0
+NOT_FOUND_1CTG=0
 NOT_FOUND_HAP1=0
 NOT_FOUND_HAP2=0
 
@@ -91,6 +96,24 @@ process_gfa_file() {
     return 0
 }
 
+# Process Primary contigs files
+echo ""
+echo "Processing Primary contigs (.bp.p_ctg.fa) files..."
+for sample_dir in "$BASE_DIR"/*/; do
+    sample_name=$(basename "$sample_dir")
+
+    # Build GFA file path with pattern
+    gfa_file=$(find "$sample_dir" -maxdepth 1 -name "$GFA_PATTERN_1CTG" | head -1)
+
+    if process_gfa_file "$gfa_file" "1ctg"; then
+        ((PROCESSED_1CTG++))
+    else
+        echo "WARNING: Primary contigs GFA file not found for: $sample_name"
+        ((NOT_FOUND_1CTG++))
+    fi
+done
+
+
 # Process haplotype 1 files
 echo ""
 echo "Processing haplotype 1 (hap1) files..."
@@ -98,7 +121,7 @@ for sample_dir in "$BASE_DIR"/*/; do
     sample_name=$(basename "$sample_dir")
 
     # Build GFA file path with pattern
-    gfa_file=$(find "$sample_dir" -maxdepth 1 -name "$GFA_PATTERN_HAP1" | head -1)
+    #gfa_file=$(find "$sample_dir" -maxdepth 1 -name "$GFA_PATTERN_HAP1" | head -1)
 
     if process_gfa_file "$gfa_file" "hap1"; then
         ((PROCESSED_HAP1++))
@@ -115,7 +138,7 @@ for sample_dir in "$BASE_DIR"/*/; do
     sample_name=$(basename "$sample_dir")
 
     # Build GFA file path with pattern
-    gfa_file=$(find "$sample_dir" -maxdepth 1 -name "$GFA_PATTERN_HAP2" | head -1)
+    #gfa_file=$(find "$sample_dir" -maxdepth 1 -name "$GFA_PATTERN_HAP2" | head -1)
 
     if process_gfa_file "$gfa_file" "hap2"; then
         ((PROCESSED_HAP2++))
@@ -129,5 +152,6 @@ done
 echo ""
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Conversion pipeline completed"
 echo "Summary:"
+echo "  Primary Contigs: $PROCESSED_1CTG processed, $NOT_FOUND_1CTG not found"
 echo "  Haplotype 1: $PROCESSED_HAP1 processed, $NOT_FOUND_HAP1 not found"
 echo "  Haplotype 2: $PROCESSED_HAP2 processed, $NOT_FOUND_HAP2 not found"
