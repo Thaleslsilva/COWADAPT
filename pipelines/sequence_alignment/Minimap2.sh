@@ -17,65 +17,90 @@
 #   - samtools (v1.10 or later)
 #
 # Environment Variables:
-#   BASE_DIR    - Base project directory (default: /home/bt-h1/KG000421)
-#   READS_DIR   - Directory containing filtered fastq files
-#   ASSEMBLIES_DIR - Directory containing assembly fasta files
-#   OUTPUT_DIR  - Output directory for BAM files
-#   SAMPLE_PATTERN - Sample name pattern to process (default: COWADAPT_*)
+#   BASE_DIR       - Base project directory (default: /home/...)
+#   READS_DIR      - Directory containing filtered fastq files
+#   REFER_DIR      - Directory containing genome reference fasta files
+#   OUTPUT_DIR     - Output directory for BAM files
+#   SAMPLE_PATTERN - Sample name pattern to process (default: ONT_*)
 #
 # Usage:
-#   export BASE_DIR="/home/bt-h1/KG000421"
-#   ./align_assmBased_Local.sh
+#   export BASE_DIR="/path/to/project"
+#   ./Minimap2.sh
 #
 #   Or with custom directories:
-#   BASE_DIR=/path/to/project READS_DIR=/path/to/reads ASSEMBLIES_DIR=/path/to/assemblies \
-#   OUTPUT_DIR=/path/to/output ./align_assmBased_Local.sh
+#   BASE_DIR=/path/to/project \
+#   READS_DIR=/path/to/reads \
+#   REFER_DIR=/path/to/genome_reference \
+#   OUTPUT_DIR=/path/to/output \
+#   ./align_assmBased_Local.sh
 #
 ################################################################################
 
 set -euo pipefail
 
-# Set default directories
-BASE_DIR="${BASE_DIR:-.}"
-READS_DIR="${READS_DIR:-${BASE_DIR}/KG000421_fq/2_filtered_fqs}"
-ASSEMBLIES_DIR="${ASSEMBLIES_DIR:-${BASE_DIR}/KG000421_fq/4_assembly}"
-OUTPUT_DIR="${OUTPUT_DIR:-${BASE_DIR}/KG000421_bam/assmBased}"
-SAMPLE_PATTERN="${SAMPLE_PATTERN:-COWADAPT_*}"
+############################
+# Directories
+############################
 
-# Create output directories
-mkdir -p "$OUTPUT_DIR"
+BASE_DIR="${BASE_DIR:-.}"
+
+READS_DIR="${READS_DIR:-${BASE_DIR}/2.qc_fastq/Filtered_fq}"
+REFER_DIR="${REFER_DIR:-${BASE_DIR}/genRef}"
+OUTPUT_DIR="${OUTPUT_DIR:-${BASE_DIR}/4.align_fastq/Align_ARS2}"
+
+REFERENCE="${REFERENCE:-${REFER_DIR}/ARS-UCD2.0_genomic.fa}"
+
+THREADS="${THREADS:-64}"
+
+mkdir -p "${OUTPUT_DIR}"
 mkdir -p logs
 
-# Find all sample directories matching the pattern
-SAMPLES=($(find "$ASSEMBLIES_DIR" -maxdepth 1 -type d -name "$SAMPLE_PATTERN" -exec basename {} \; | sort))
+############################
+# Check reference
+############################
 
-if [[ ${#SAMPLES[@]} -eq 0 ]]; then
-    echo "WARNING: No samples found matching pattern: $SAMPLE_PATTERN"
-    exit 0
+if [[ ! -f "$REFERENCE" ]]; then
+    echo "Reference genome not found:"
+    echo "$REFERENCE"
+    exit 1
 fi
 
-# Process each sample
-for SAMPLE in "${SAMPLES[@]}"; do
-    # Define file paths
-    ASSEMBLY_FILE="${ASSEMBLIES_DIR}/${SAMPLE}/${SAMPLE}.fasta"
-    READS_FILE="${READS_DIR}/${SAMPLE}_filt.fq.gz"
-    BAM_FILE="${OUTPUT_DIR}/${SAMPLE}_alnRead.bam"
+############################
+# Process each FASTQ
+############################
 
-    # Check if both input files exist
-    if [[ -f "$ASSEMBLY_FILE" && -f "$READS_FILE" ]]; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Aligning reads for sample: $SAMPLE"
+shopt -s nullglob
 
-        # Align reads to assembly and create indexed BAM
-        minimap2 -t 64 -ax map-ont "$ASSEMBLY_FILE" "$READS_FILE" | \
-            samtools sort -@ 8 -o "$BAM_FILE"
-        samtools index "$BAM_FILE"
+for READS_FILE in "${READS_DIR}"/*_filt.fq.gz
+do
 
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] Alignment completed for sample: $SAMPLE"
-    else
-        echo "ERROR: Missing files for sample: $SAMPLE"
-        echo "  Assembly: $ASSEMBLY_FILE (exists: $(test -f "$ASSEMBLY_FILE" && echo "yes" || echo "no"))"
-        echo "  Reads:    $READS_FILE (exists: $(test -f "$READS_FILE" && echo "yes" || echo "no"))"
-    fi
+    SAMPLE=$(basename "$READS_FILE")
+    SAMPLE=${SAMPLE%_filt.fq.gz}
+
+    BAM_FILE="${OUTPUT_DIR}/${SAMPLE}.sorted.bam"
+
+    echo "====================================================="
+    echo "$(date)"
+    echo "Sample: ${SAMPLE}"
+    echo "Reads : ${READS_FILE}"
+    echo "Output: ${BAM_FILE}"
+    echo "====================================================="
+
+    minimap2 \
+        -t ${THREADS} \
+        -ax map-ont \
+        "${REFERENCE}" \
+        "${READS_FILE}" | \
+    samtools sort \
+        -@ ${THREADS} \
+        -o "${BAM_FILE}" -
+
+    samtools index -@ ${THREADS} "${BAM_FILE}"
+
+    samtools flagstat "${BAM_FILE}" > "${OUTPUT_DIR}/${SAMPLE}.flagstat"
+
 done
 
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] All samples processed."
+echo
+echo "Alignment finished."
+echo "$(date)"
