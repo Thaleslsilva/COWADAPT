@@ -91,6 +91,7 @@ do
     minimap2 \
         -t ${THREADS} \
         -ax map-ont \
+        -R "@RG\tID:${SAMPLE}\tSM:${SAMPLE}\tPL:ONT\tPM:PromethION\tLB:LIB1\tPU:FLOWCELL1" \
         "${REFERENCE}" \
         "${READS_FILE}" | \
     samtools sort \
