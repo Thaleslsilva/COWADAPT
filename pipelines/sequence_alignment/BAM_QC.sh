@@ -67,7 +67,7 @@ do
     echo "====================================================="
  
 
-    #samtools flagstat "${BAM_FILE}" > "${QLTCTR_DIR}/${SAMPLE}.flagstat"
+    samtools flagstat "${BAM_FILE}" > "${QLTCTR_DIR}/${SAMPLE}.flagstat"
     samtools stats "${BAM_FILE}" > "${QLTCTR_DIR}/${SAMPLE}.stat"
     samtools idxstats "${BAM_FILE}" > "${QLTCTR_DIR}/${SAMPLE}.idxstat"
 )&
