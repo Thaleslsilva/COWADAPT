@@ -5,33 +5,37 @@
 ################################################################################
 #
 # Description:
+#   Computes per-base and windowed (100kb) sequencing coverage for the sorted,
+#   indexed BAM files produced by Minimap2.sh, using mosdepth.
 #
 # Version: 1.0
 # Author: Genome Assembly Pipeline
 # Updated: 2026-08-03
 #
 # Dependencies:
+#   - mosdepth (v0.3 or later)
 #
 # Environment Variables:
-#   BASE_DIR       - Base project directory (default: /home/...)
-#   READS_DIR      - Directory containing filtered fastq files
-#   OUTPUT_DIR     - Output directory for BAM files
-#   SAMPLE_PATTERN - Sample name pattern to process (default: ONT_*)
+#   BASE_DIR   - Base project directory (default: .)
+#   OUTPUT_DIR - Directory containing sorted BAM files (output of Minimap2.sh)
+#   COVRG_DIR  - Output directory for coverage reports
+#   MAX_JOBS   - Maximum number of samples processed in parallel (default: 10)
 #
 # Usage:
-#   export BASE_DIR="/home/breeder9/gen_alin_novo/seq_Holanda"
+#   export BASE_DIR="/path/to/project"
 #   ./Coverage.sh
 #
 #   Or with custom directories:
 #   BASE_DIR=/path/to/project \
-#   READS_DIR=/path/to/reads \
 #   OUTPUT_DIR=/path/to/output \
+#   COVRG_DIR=/path/to/coverage \
 #   ./Coverage.sh
 #
 ################################################################################
 
+set -euo pipefail
 
-MAX_JOBS=10
+MAX_JOBS="${MAX_JOBS:-10}"
 
 ############################
 # Directories
@@ -39,35 +43,31 @@ MAX_JOBS=10
 
 BASE_DIR="${BASE_DIR:-.}"
 
-READS_DIR="${READS_DIR:-${BASE_DIR}/2.qc_fastq/Filtered_fq}"
 OUTPUT_DIR="${OUTPUT_DIR:-${BASE_DIR}/3.align_fastq/Align_ARS2}"
-COVRG_DIR="${OUTPUT_DIR:-${BASE_DIR}/3.align_fastq/Coverage}"
-
+COVRG_DIR="${COVRG_DIR:-${BASE_DIR}/3.align_fastq/Coverage}"
 
 mkdir -p "${COVRG_DIR}"
+mkdir -p logs
 
+shopt -s nullglob
 
 ############################
-# Process each BAM
+# Whole-genome coverage
 ############################
 
-for READS_FILE in "${READS_DIR}"/*_filt.fq.gz
+for BAM_FILE in "${OUTPUT_DIR}"/*.sorted.bam
 do
 (
-    SAMPLE=$(basename "$READS_FILE")
-    SAMPLE=${SAMPLE%_filt.fq.gz}
-
-    BAM_FILE="${OUTPUT_DIR}/${SAMPLE}.sorted.bam"
+    SAMPLE=$(basename "$BAM_FILE")
+    SAMPLE=${SAMPLE%.sorted.bam}
 
     echo "====================================================="
     echo "$(date)"
-    echo "Sample: ${SAMPLE}"
-    echo "Reads : ${READS_FILE}"
+    echo "Sample  : ${SAMPLE}"
     echo "Bam File: ${BAM_FILE}"
     echo "====================================================="
- 
 
-    mosdepth --threads 4 "${SAMPLE}" "${BAM_FILE}"
+    mosdepth --threads 4 "${COVRG_DIR}/${SAMPLE}" "${BAM_FILE}"
 )&
 
 while (( $(jobs -r | wc -l) >= MAX_JOBS ))
@@ -79,23 +79,23 @@ done
 
 wait
 
+############################
+# Windowed coverage (100kb)
+############################
 
-for READS_FILE in "${READS_DIR}"/*_filt.fq.gz
+for BAM_FILE in "${OUTPUT_DIR}"/*.sorted.bam
 do
 (
-    SAMPLE=$(basename "$READS_FILE")
-    SAMPLE=${SAMPLE%_filt.fq.gz}
-
-    BAM_FILE="${OUTPUT_DIR}/${SAMPLE}.sorted.bam"
+    SAMPLE=$(basename "$BAM_FILE")
+    SAMPLE=${SAMPLE%.sorted.bam}
 
     echo "====================================================="
     echo "$(date)"
-    echo "Sample: ${SAMPLE}"
-    echo "Reads : ${READS_FILE}"
+    echo "Sample  : ${SAMPLE}"
     echo "Bam File: ${BAM_FILE}"
     echo "====================================================="
- 
-    mosdepth --by 100000 "${SAMPLE}" "${BAM_FILE}"
+
+    mosdepth --by 100000 "${COVRG_DIR}/${SAMPLE}.100kb" "${BAM_FILE}"
 )&
 
 while (( $(jobs -r | wc -l) >= MAX_JOBS ))
@@ -106,3 +106,7 @@ done
 done
 
 wait
+
+echo
+echo "Coverage finished."
+echo "$(date)"
