@@ -1,42 +1,37 @@
 #!/bin/bash
 
 ################################################################################
-# Reference-Based Read Alignment
+# Reference-Based Bam File Quality Control
 ################################################################################
 #
 # Description:
-#   Aligns filtered long-read sequencing data to corresponding genome assemblies
-#   using minimap2 and generates indexed BAM files.
 #
 # Version: 1.0
 # Author: Genome Assembly Pipeline
-# Updated: 2026-05-28
+# Updated: 2026-08-03
 #
 # Dependencies:
-#   - minimap2 (v2.17 or later)
-#   - samtools (v1.10 or later)
 #
 # Environment Variables:
 #   BASE_DIR       - Base project directory (default: /home/...)
 #   READS_DIR      - Directory containing filtered fastq files
-#   REFER_DIR      - Directory containing genome reference fasta files
 #   OUTPUT_DIR     - Output directory for BAM files
 #   SAMPLE_PATTERN - Sample name pattern to process (default: ONT_*)
 #
 # Usage:
 #   export BASE_DIR="/home/breeder9/gen_alin_novo/seq_Holanda"
-#   ./Minimap2.sh
+#   ./BAM_QC.sh
 #
 #   Or with custom directories:
 #   BASE_DIR=/path/to/project \
 #   READS_DIR=/path/to/reads \
-#   REFER_DIR=/path/to/genome_reference \
 #   OUTPUT_DIR=/path/to/output \
-#   ./align_assmBased_Local.sh
+#   ./BAM_QC.sh
 #
 ################################################################################
 
-set -euo pipefail
+
+MAX_JOBS=10
 
 ############################
 # Directories
@@ -45,37 +40,20 @@ set -euo pipefail
 BASE_DIR="${BASE_DIR:-.}"
 
 READS_DIR="${READS_DIR:-${BASE_DIR}/2.qc_fastq/Filtered_fq}"
-REFER_DIR="${REFER_DIR:-${BASE_DIR}/genRef}"
 OUTPUT_DIR="${OUTPUT_DIR:-${BASE_DIR}/3.align_fastq/Align_ARS2}"
 QLTCTR_DIR="${OUTPUT_DIR:-${BASE_DIR}/3.align_fastq/Qlty_Ctrl}"
 
 
-REFERENCE="${REFERENCE:-${REFER_DIR}/ARS-UCD2.0_genomic.fa}"
+mkdir -p "${QLTCTR_DIR}"
 
-THREADS="${THREADS:-64}"
-
-mkdir -p "${OUTPUT_DIR}"
-mkdir -p logs
 
 ############################
-# Check reference
+# Process each BAM
 ############################
-
-if [[ ! -f "$REFERENCE" ]]; then
-    echo "Reference genome not found:"
-    echo "$REFERENCE"
-    exit 1
-fi
-
-############################
-# Process each FASTQ
-############################
-
-shopt -s nullglob
 
 for READS_FILE in "${READS_DIR}"/*_filt.fq.gz
 do
-
+(
     SAMPLE=$(basename "$READS_FILE")
     SAMPLE=${SAMPLE%_filt.fq.gz}
 
@@ -85,22 +63,20 @@ do
     echo "$(date)"
     echo "Sample: ${SAMPLE}"
     echo "Reads : ${READS_FILE}"
-    echo "Output: ${BAM_FILE}"
+    echo "Bam File: ${BAM_FILE}"
     echo "====================================================="
+ 
 
-    minimap2 \
-        -t ${THREADS} \
-        -ax map-ont \
-        "${REFERENCE}" \
-        "${READS_FILE}" | \
-    samtools sort \
-        -@ ${THREADS} \
-        -o "${BAM_FILE}" -
+    #samtools flagstat "${BAM_FILE}" > "${QLTCTR_DIR}/${SAMPLE}.flagstat"
+    samtools stats "${BAM_FILE}" > "${QLTCTR_DIR}/${SAMPLE}.stat"
+    samtools idxstats "${BAM_FILE}" > "${QLTCTR_DIR}/${SAMPLE}.idxstat"
+)&
 
-    samtools index -@ ${THREADS} "${BAM_FILE}"
+while (( $(jobs -r | wc -l) >= MAX_JOBS ))
+do
+    sleep 1
+done
 
 done
 
-echo
-echo "Alignment finished."
-echo "$(date)"
+wait
