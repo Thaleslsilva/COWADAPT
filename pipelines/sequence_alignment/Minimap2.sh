@@ -24,7 +24,7 @@
 #   SAMPLE_PATTERN - Sample name pattern to process (default: ONT_*)
 #
 # Usage:
-#   export BASE_DIR="/home/breeder9/gen_alin_novo/seq_Holanda"
+#   export BASE_DIR="/path/to/project"
 #   ./Minimap2.sh
 #
 #   Or with custom directories:
