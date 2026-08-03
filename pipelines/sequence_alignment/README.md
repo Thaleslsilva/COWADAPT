@@ -1,12 +1,14 @@
 # Sequence Alignment Pipeline
 
-This pipeline aligns long-read sequencing data against reference or assembled genomes using [Minimap2](https://github.com/lh3/minimap2), producing sorted and indexed BAM files that feed into downstream variant calling.
+This pipeline aligns long-read sequencing data against reference or assembled genomes using [Minimap2](https://github.com/lh3/minimap2), producing sorted and indexed BAM files, and then evaluates alignment quality and coverage with [samtools](https://github.com/samtools/samtools) and [mosdepth](https://github.com/brentp/mosdepth).
 
 ## Pipeline Steps
 
 The scripts must be run in the following order:
 
 1. **[`Minimap2.sh`](./Minimap2.sh)** — Assembly-based read alignment
+2. **[`BAM_QC.sh`](./BAM_QC.sh)** — BAM file quality control
+3. **[`Coverage.sh`](./Coverage.sh)** — BAM file coverage
 
 ---
 
@@ -40,6 +42,68 @@ OUTPUT_DIR=/path/to/output ./Minimap2.sh
 ```
 
 **Output:** one `{SAMPLE}_alnRead.bam` (and its `.bai` index) per sample in `OUTPUT_DIR`.
+
+---
+
+### 2. BAM_QC.sh
+
+Runs quality-control metrics ([`samtools flagstat`](https://www.htslib.org/doc/samtools-flagstat.html), [`samtools stats`](https://www.htslib.org/doc/samtools-stats.html) and [`samtools idxstats`](https://www.htslib.org/doc/samtools-idxstats.html)) on the sorted, indexed BAM files produced by `Minimap2.sh`. Samples are processed in parallel, up to `MAX_JOBS` at a time.
+
+**Dependencies:**
+- `samtools` (v1.10 or later)
+
+**Environment variables:**
+
+| Variable | Description | Default |
+|---|---|---|
+| `BASE_DIR` | Base project directory | `.` |
+| `OUTPUT_DIR` | Directory containing the sorted BAM files (output of `Minimap2.sh`) | `${BASE_DIR}/3.align_fastq/Align_ARS2` |
+| `QLTCTR_DIR` | Output directory for QC reports | `${BASE_DIR}/3.align_fastq/Qlty_Ctrl` |
+| `MAX_JOBS` | Maximum number of samples processed in parallel | `10` |
+
+**Usage:**
+
+```bash
+export BASE_DIR="/path/to/project"
+./BAM_QC.sh
+
+# Or with custom directories:
+BASE_DIR=/path/to/project OUTPUT_DIR=/path/to/output QLTCTR_DIR=/path/to/qc \
+./BAM_QC.sh
+```
+
+**Output:** one `{SAMPLE}.flagstat`, `{SAMPLE}.stat` and `{SAMPLE}.idxstat` per sample in `QLTCTR_DIR`.
+
+---
+
+### 3. Coverage.sh
+
+Computes per-base and windowed (100kb) sequencing coverage for the sorted, indexed BAM files produced by `Minimap2.sh`, using [mosdepth](https://github.com/brentp/mosdepth). Samples are processed in parallel, up to `MAX_JOBS` at a time.
+
+**Dependencies:**
+- `mosdepth` (v0.3 or later)
+
+**Environment variables:**
+
+| Variable | Description | Default |
+|---|---|---|
+| `BASE_DIR` | Base project directory | `.` |
+| `OUTPUT_DIR` | Directory containing the sorted BAM files (output of `Minimap2.sh`) | `${BASE_DIR}/3.align_fastq/Align_ARS2` |
+| `COVRG_DIR` | Output directory for coverage reports | `${BASE_DIR}/3.align_fastq/Coverage` |
+| `MAX_JOBS` | Maximum number of samples processed in parallel | `10` |
+
+**Usage:**
+
+```bash
+export BASE_DIR="/path/to/project"
+./Coverage.sh
+
+# Or with custom directories:
+BASE_DIR=/path/to/project OUTPUT_DIR=/path/to/output COVRG_DIR=/path/to/coverage \
+./Coverage.sh
+```
+
+**Output:** whole-genome mosdepth output files per sample (`{SAMPLE}.mosdepth*`, `{SAMPLE}.per-base.bed.gz`, ...) and windowed 100kb coverage files (`{SAMPLE}.100kb.*`) in `COVRG_DIR`.
 
 ---
 
