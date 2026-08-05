@@ -102,6 +102,6 @@ do
 
 done
 
-echo
+echo ""
 echo "Alignment finished."
 echo "$(date)"
