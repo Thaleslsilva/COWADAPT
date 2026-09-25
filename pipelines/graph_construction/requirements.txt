@@ -1,0 +1,7 @@
+pandas
+numpy
+matplotlib
+pysam
+biopython
+upsetplot
+requests

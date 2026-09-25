@@ -1,0 +1,23 @@
+name: pan_ind_artigo
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.10
+  - snakemake
+  - cactus
+  - odgi
+  - vg
+  - augustus
+  - blast
+  - repeatmasker
+  - pandas
+  - numpy
+  - matplotlib
+  - pysam
+  - biopython
+  - pip
+  - pip:
+      - upsetplot
+      - requests
