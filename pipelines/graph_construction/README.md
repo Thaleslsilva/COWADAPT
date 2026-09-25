@@ -1,6 +1,6 @@
-# pan_IND_artigo
+# INDICINE Pangenome
 
-Scripts for building and analyzing an Indicine/Nelore cattle pangenome, developed for the COWADAPT project article.
+Scripts for building and analyzing an Indicine cattle pangenome, developed for the COWADAPT project article.
 
 ## Overview
 
