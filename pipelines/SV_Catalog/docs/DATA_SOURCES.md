@@ -254,6 +254,38 @@ vep_install \
 
 ---
 
+## 5. Example / Test Dataset: Nelore SV Calls (Zenodo)
+
+**DOI:** https://doi.org/10.5281/zenodo.21878484
+
+Autosomal SV calls from 20 Nelore (*Bos indicus*) bulls sequenced on Oxford Nanopore PromethION, aligned to ARS-UCD2.0 and called independently with Sniffles2 and SVIM. Per-sample VCFs are provided for each caller.
+
+**Where it fits in the pipeline:** the deposit contains VCFs only (no BAMs/reads), so it stands in for the output of **Step 1** and is an entry point for **Step 2 (SV merge)** onwards. Step 1 (calling) cannot be replicated from it.
+
+| Step | Usable with this dataset? |
+|------|---------------------------|
+| 1 SV calling | No (needs BAMs) |
+| 2 SV merge | Yes, directly |
+| 3 Validation | Only if matching BAMs are available (read-based) |
+| 4-7 | Yes, on the merged VCFs (Step 3 can be skipped for testing) |
+
+**How to use it:** download the files from the Zenodo record, then place them where Step 2 expects them (see `config/pipeline.config`):
+
+```
+results/sv_calls/sniffles2/<sample>.vcf
+results/sv_calls/svim/<sample>.vcf
+```
+
+**Requirements of `run_survivor_merge.sh`:**
+- Files must be uncompressed `.vcf` (use `gunzip`/`bgzip -d` if the deposit is `.vcf.gz`).
+- Each sample must have the **same basename** in both caller directories (e.g. `NEL01.vcf`); rename if the Zenodo names carry a caller suffix.
+- Chromosome names must match the reference used by the pipeline; check with `grep -v '^#' file.vcf | cut -f1 | uniq`.
+- The deposit is autosomal only, so no sex-chromosome results are expected.
+
+Cite the Zenodo DOI when using this dataset.
+
+---
+
 ## Complete Download Setup Script
 
 **NEW FILE: `src/utils/setup_reference_data.sh`**

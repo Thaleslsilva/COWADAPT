@@ -93,6 +93,8 @@ Download with: bash src/utils/setup_reference_data.sh
 
 ## Example Dataset
 
+Public test data: Sniffles2 and SVIM VCFs from 20 Nelore bulls (ONT, ARS-UCD2.0) are available at https://doi.org/10.5281/zenodo.21878484. They can be used to test or replicate the pipeline from Step 2 (SV merge) onwards. See docs/DATA_SOURCES.md, section 5.
+
 The pipeline is designed to work with:
 - Long-read BAM files (PacBio SMRT or Oxford Nanopore)
 - Minimum coverage: 15x recommended
