@@ -98,6 +98,14 @@ The pipeline is designed to work with:
 - Minimum coverage: 15x recommended
 - Paired reads from 2 or more SV callers for robust variant calls
 
+A public test dataset is available on Zenodo ([10.5281/zenodo.21878484](https://doi.org/10.5281/zenodo.21878484)): autosomal Sniffles2 and SVIM VCFs from 20 Nelore bulls (ONT PromethION, ARS-UCD2.0). It contains VCFs only, so it enters the pipeline at **Step 2** (SURVIVOR merge); Step 1 cannot be replicated and Step 3 requires the original BAMs. Download and rename with:
+
+```bash
+bash src/utils/download_example_data.sh
+```
+
+See [docs/DATA_SOURCES.md](docs/DATA_SOURCES.md) (section 5) for details.
+
 ## License
 
 This pipeline is part of the COWADAPT project.
