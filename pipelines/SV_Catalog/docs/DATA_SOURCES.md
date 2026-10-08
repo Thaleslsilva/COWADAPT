@@ -254,6 +254,39 @@ vep_install \
 
 ---
 
+## 5. Example / Test Dataset (Nelore SV calls, Zenodo)
+
+### Source
+- **DOI:** https://doi.org/10.5281/zenodo.21878484
+- **Content:** Autosomal SV calls from 20 Nelore (*Bos indicus*) bulls, sequenced on Oxford Nanopore PromethION and aligned to ARS-UCD2.0. SVs called independently with Sniffles2 and SVIM (one VCF per sample per caller).
+- **Files:** `COWADAPT_<ID>.autoss.snfl.vcf` (Sniffles2) and `COWADAPT_<ID>.autoss.svim.vcf` (SVIM), IDs 001-006, 008-020, 023.
+
+### Which steps it covers
+
+| Step | Covered? | Notes |
+|------|----------|-------|
+| 1 - SV calling | No | Deposit has VCFs only, no BAMs |
+| 2 - SURVIVOR merge | **Yes (entry point)** | Uses the Sniffles2 + SVIM VCFs directly |
+| 3 - Read-based validation | No | Requires the original BAMs; can be skipped to test Steps 4-7 |
+| 4-7 | Yes, after Step 2 | Autosomes only; no sex-chromosome results |
+
+### Download and layout
+
+```bash
+bash src/utils/download_example_data.sh
+```
+
+Step 2 expects uncompressed VCFs with the same base name in both caller folders, so the script renames:
+
+```
+COWADAPT_001.autoss.snfl.vcf -> results/sv_calls/sniffles2/COWADAPT_001.vcf
+COWADAPT_001.autoss.svim.vcf -> results/sv_calls/svim/COWADAPT_001.vcf
+```
+
+Then run `bash src/02_sv_merge/run_survivor_merge.sh`. Check that the chromosome naming in the VCFs matches the reference FASTA used in later steps.
+
+---
+
 ## Complete Download Setup Script
 
 **NEW FILE: `src/utils/setup_reference_data.sh`**
@@ -417,4 +450,5 @@ ls -R data/reference/
 - **Kasarapu et al. 2017:** https://doi.org/10.1038/ncomms14482
 - **Ensembl VEP:** https://www.ensembl.org/vep
 - **liftOver:** https://genome.ucsc.edu/cgi-bin/hgLiftOver
+- **Example Nelore SV dataset (Zenodo):** https://doi.org/10.5281/zenodo.21878484
 
