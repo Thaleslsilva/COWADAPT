@@ -22,9 +22,17 @@
 # > source cactus_env/bin/activate
 
 
+# NOTES
+# - Steps 1-4 are commented out in this version of the script; uncomment them to
+#   run the whole Minigraph-Cactus pipeline from the seqFile (SEQ_FILE below).
+# - The active invocation of Step 5 writes --outName IND_final to out_IND/, while the
+#   downstream scripts expect the prefix in config/pipeline.config
+#   (PANGENOME_PREFIX=IND_pangenome_final, as in the Zenodo graph). The commented
+#   alternative at the end of the file uses that name; rename outputs accordingly.
+
 set -euo pipefail
 
-source "$(dirname "$0")/config.env"
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/config/pipeline.config"
 
 # === ENVIRONMENT & PATHS ===
 # Define the number of cores and memory available on your local server
@@ -32,9 +40,9 @@ CORES=$DEFAULT_THREADS
 MEMORY_LIMIT="900G"
 GFA="IND_ini.gfa"
 PAF="IND_mappings.paf"
-# REF comes from config.env; ensure it matches the ID used in seqFile.txt
+# REF comes from config/pipeline.config; ensure it matches the ID used in seqFile.txt
 SEQ_FILE="seqFile_26.txt"
-OUTPUT_DIR="resIND_pangenome"
+OUTPUT_DIR="post_pangenome"
 
 # === WORKFLOW STEPS ===
 

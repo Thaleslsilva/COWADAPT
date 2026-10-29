@@ -1,0 +1,196 @@
+"""
+Snakemake conversion of 1.core_acessory_anl.sh.
+
+EXPERIMENTAL: validated with `snakemake -n` only and not used to generate the
+manuscript results. The shell script is the reference implementation.
+
+Usage:
+    cd <workdir>/post_pangenome/IND_analysis/coreFlex_analysis   # then pass -s <path to this Snakefile>
+    snakemake -n                  # dry run
+    snakemake --cores <N>         # run all targets (all chromosomes x types)
+
+Relative paths below match the ones the original script used for its own
+location (variables defined before it `cd`s into core_flexible_anl/), so
+they are NOT reconciled with the graph_level Snakefile's own
+relative paths - that cross-script path convention already existed before
+this conversion and is out of scope to unify here.
+"""
+
+import os
+
+configfile: os.path.join(workflow.basedir, "../../../../config/workflow.yaml")
+
+PREFIX = config["pangenome_prefix"]
+THREADS = config["threads"]
+BIN_SIZE = config["bin_size"]
+CHROMOSOMES = config["chromosomes"]
+TYPES = ["core", "accessory", "private"]
+
+GRAPH_OG = f"../../{PREFIX}.sorted.og"
+GRAPH_GFA = f"../../{PREFIX}.sorted.gfa"
+PATHS_FILE = "../path_id.tsv"  # pre-existing input, produced upstream
+
+OUT = "core_flexible_anl"
+
+rule all:
+    input:
+        f"{OUT}/pav_spectrum.tsv",
+        expand(f"{OUT}/density/{{chrom}}.{{type}}.tsv", chrom=CHROMOSOMES, type=TYPES)
+
+
+rule build_haplotype_map:
+    input:
+        PATHS_FILE
+    output:
+        f"{OUT}/path_to_haplotype.tsv"
+    shell:
+        """
+        awk -F'#' '
+        {{
+          if ($1 ~ /_hap/) {{
+            hap = $1 "#" $2
+          }} else {{
+            hap = $1
+          }}
+          print $0 "\\t" hap
+        }}
+        ' {input} > {output}
+        """
+
+rule count_haplotypes:
+    input:
+        f"{OUT}/path_to_haplotype.tsv"
+    output:
+        f"{OUT}/haplotypes.txt"
+    shell:
+        "cut -f2 {input} | sort | uniq > {output}"
+
+rule node_haplotype_count:
+    input:
+        graph=GRAPH_OG,
+        hap_map=f"{OUT}/path_to_haplotype.tsv"
+    output:
+        f"{OUT}/node_haplotype_count.tsv"
+    shell:
+        """
+        odgi paths -i {input.graph} -N -t {THREADS} | \
+        awk '
+        NR==FNR {{map[$1]=$2; next}}
+        {{
+          hap = map[$2]
+          key = $1 "\\t" hap
+          if (!(key in seen)) {{
+            seen[key]=1
+            count[$1]++
+          }}
+        }}
+        END {{
+          for (n in count) print n, count[n]
+        }}
+        ' {input.hap_map} - > {output}
+        """
+
+rule pav_spectrum:
+    input:
+        f"{OUT}/node_haplotype_count.tsv"
+    output:
+        f"{OUT}/pav_spectrum.tsv"
+    shell:
+        """
+        awk '{{freq[$2]++}} END {{
+          for (f in freq) print f, freq[f]
+        }}' {input} | sort -n > {output}
+        """
+
+rule classify_nodes:
+    input:
+        counts=f"{OUT}/node_haplotype_count.tsv",
+        haplotypes=f"{OUT}/haplotypes.txt"
+    output:
+        core=f"{OUT}/core_nodes.txt",
+        accessory=f"{OUT}/accessory_nodes.txt",
+        private=f"{OUT}/private_nodes.txt"
+    shell:
+        """
+        N_HAPS=$(wc -l < {input.haplotypes})
+        awk -v N=$N_HAPS '
+        {{
+          if ($2 == N) print $1 > "{output.core}"
+          else if ($2 == 1) print $1 > "{output.private}"
+          else print $1 > "{output.accessory}"
+        }}
+        ' {input.counts}
+        """
+
+rule node_lengths:
+    input:
+        GRAPH_OG
+    output:
+        f"{OUT}/node_length.tsv"
+    shell:
+        """
+        odgi view -i {input} -g | \
+        awk '$1=="S"{{print $2 "\\t" length($3)}}' > {output}
+        """
+
+rule ref_paths:
+    input:
+        GRAPH_GFA
+    output:
+        f"{OUT}/ref_paths.gfa"
+    shell:
+        """
+        grep "^P" {input} | grep "{config[ref]}" > {output}
+        """
+
+# Per-chromosome node extraction + position conversion.
+# Splitting this out from the density rule avoids recomputing it once per
+# (chrom, type) combination - the original script's nested loop did repeat
+# this work for every type.
+rule chrom_positions:
+    input:
+        ref_paths=f"{OUT}/ref_paths.gfa",
+        node_lengths=f"{OUT}/node_length.tsv"
+    output:
+        f"{OUT}/tmp/{{chrom}}.pos.tsv"
+    shell:
+        """
+        mkdir -p {OUT}/tmp
+        awk -F'\\t' -v c="{wildcards.chrom}" '$2 ~ c {{print; exit}}' {input.ref_paths} | \
+        awk '{{
+          split($3, nodes, ",");
+          for (i=1; i<=length(nodes); i++) {{
+            gsub(/[+-]/, "", nodes[i]);
+            print nodes[i];
+          }}
+        }}' | \
+        awk 'NR==FNR {{len[$1]=$2; next}} {{pos += len[$1]; print $1 "\\t" pos}}' {input.node_lengths} - > {output}
+        """
+
+# Bug fix (found during this conversion): the original script's density loop
+# read "../nodes_${TYPE}.txt", which never matched what classify_nodes
+# actually produces (core_nodes.txt / accessory_nodes.txt / private_nodes.txt).
+# This rule uses the real file, so this step runs successfully for the first time.
+rule density:
+    input:
+        positions=f"{OUT}/tmp/{{chrom}}.pos.tsv",
+        class_file=lambda wc: f"{OUT}/{wc.type}_nodes.txt"
+    output:
+        f"{OUT}/density/{{chrom}}.{{type}}.tsv"
+    wildcard_constraints:
+        type="core|accessory|private"
+    shell:
+        """
+        mkdir -p {OUT}/density
+        awk -v BIN={BIN_SIZE} '
+        NR==FNR {{set[$1]; next}}
+        ($1 in set) {{
+          bin = int($2 / BIN);
+          count[bin]++;
+        }}
+        END {{
+          for (b in count)
+            print b*BIN "\\t" count[b];
+        }}
+        ' {input.class_file} {input.positions} | sort -n > {output}
+        """

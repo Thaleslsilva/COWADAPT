@@ -1,0 +1,47 @@
+# Configuration for the Snakemake pipelines in src/02_graph_statistics/snakemake/.
+# These pipelines are experimental: validated with `snakemake -n` only and not used
+# to generate the manuscript results. The plain shell/Python scripts read
+# config/pipeline.config instead.
+
+ref: ARS_UCD2
+pangenome_prefix: IND_pangenome_final
+threads: 100
+bin_size: 1000000
+
+# Set this to a BED file of path ranges to enable the `pav` rule
+# (odgi pav requires -b/--bed-file; left unset because no such file
+# exists yet in this repo - see the Phase 2 bugfix notes).
+# pav_bed_file: path/to/ranges.bed
+
+# The 29 ARS-UCD2.0 autosomes, in chromosome order (chr01-chr29).
+# Same static list used in vg_deconstruct/snmk_out/*.sh.
+chromosomes:
+  - NC_037328.1
+  - NC_037329.1
+  - NC_037330.1
+  - NC_037331.1
+  - NC_037332.1
+  - NC_037333.1
+  - NC_037334.1
+  - NC_037335.1
+  - NC_037336.1
+  - NC_037337.1
+  - NC_037338.1
+  - NC_037339.1
+  - NC_037340.1
+  - NC_037341.1
+  - NC_037342.1
+  - NC_037343.1
+  - NC_037344.1
+  - NC_037345.1
+  - NC_037346.1
+  - NC_037347.1
+  - NC_037348.1
+  - NC_037349.1
+  - NC_037350.1
+  - NC_037351.1
+  - NC_037352.1
+  - NC_037353.1
+  - NC_037354.1
+  - NC_037355.1
+  - NC_037356.1
