@@ -19,7 +19,7 @@ Tool versions are the ones reported in the manuscript.
 | De novo assemblies: assembly | Hifiasm 0.21.0-r686 | [`../../genome_assembly`](../../genome_assembly) | Other pipeline |
 | De novo assemblies: polishing, scaffolding, QC | Minimap2 2.30-r1287, Medaka 1.7.2, RagTag 2.1.0, BUSCO 6.0.0 (`mammalia_odb10`) | | Command only `TODO(author)` |
 | PanSN naming of assemblies | awk, samtools, bgzip/pbgzip | `src/00_data_preparation/filter_COW.sh`, `filter_rename_BRA.sh`, `reconstruct_pansn.py` | Included |
-| Pangenome graph: genetic distance and guide tree | Mash 2.3 (`-s 100000 -k 32`), R `ape` 5.4 (NJ) | `src/00_data_preparation/phylo_tree.sh` (Mash); `phylo_tree_assembly.R` (tree) | Mash included; NJ script Pending |
+| Pangenome graph: genetic distance and guide tree | Mash 2.3 (`-s 100000 -k 32`), R `ape` 5.4 (NJ) | `src/00_data_preparation/phylo_tree.sh` (Mash); `phylo_tree_assembly.R` (NJ tree) | Included |
 | Pangenome graph: construction | Minigraph-Cactus 2.9.8 | `src/01_graph_construction/mnghp-cactus.sh`; Cactus `seqFile` and guide tree | Script included; `seqFile` Pending |
 | SV discovery from the graph | vg deconstruct, vcfbub 0.1.0, vcfwave, BCFtools 1.22 | `src/03_sv_discovery/vg_deconstruct.smk`, `par_run.sh`, `1_bgzip_vcfs.sh`, `2_concat_SV.vcf.sh`, `3_concat_small.vcf.sh` | Included (YAML values `TODO(author)`, see `config/vg_deconstruct.template.yaml`) |
 | NR sequence extraction and PCA | PLINK 1.9 (manuscript) | `src/05_nr_sequences/1.extINS_INDpang.sh` (insertions); `src/04_sv_analysis/1.PCA_prepare.sh` (PCA) | Included; PLINK version `TODO(author)` (the script calls `plink2`); minimum insertion size in `1.extINS_INDpang.sh` is 100 bp `TODO(author)` |
@@ -35,7 +35,7 @@ Tool versions are the ones reported in the manuscript.
 | Result | Code | Status |
 |--------|------|--------|
 | Assembly metrics (Table 1) | `config/samples.tsv` | Included (metrics as reported) |
-| Figure 1: Mash distance heatmap | `phylo_tree.sh` + `phylo_tree_assembly.R` | R Pending |
+| Figure 1: Mash distance heatmap | `phylo_tree.sh` + `src/08_figures/mash_distances.R` | Included |
 | Graph size, NR nodes and sequence | `src/02_graph_statistics/graph_level/1.postGraph_wrkflw.sh` and `1_a` to `1_e` scripts | Included |
 | Core, accessory and private genome | `graph_level/3.CoreFlex_analysis.sh`, `coreflex/1.core_acessory_anl.sh` | Included |
 | Sharing among breeds (Figure 2) | `coreflex/3.breed_intersections.sh`, `4.breed_intersections_plot.py` | Included `TODO(author)`: confirm figure number |
@@ -49,4 +49,4 @@ Tool versions are the ones reported in the manuscript.
 
 ## Not covered
 
-Everything marked Pending or `TODO(author)` above. The Cactus `seqFile`, the R scripts and the figure scripts are tracked in `src/08_figures/README.md`.
+Everything marked Pending or `TODO(author)` above. The Cactus `seqFile`, the R GO/KEGG and candidate-gene scripts and the remaining figure scripts are tracked in `src/08_figures/README.md`.

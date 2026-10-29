@@ -33,7 +33,7 @@ If you only need the Python packages: `pip install -r requirements.txt`.
 | DIAMOND | 2.1.8 |
 | Augustus | 3.5.0 |
 | eggNOG-mapper | 2.1.13 (eggNOG 5.0) |
-| R packages | ape 5.4, clusterProfiler 4.18.0, org.Bt.eg.db 3.22.0 |
+| R packages | ape 5.4, clusterProfiler 4.18.0, org.Bt.eg.db 3.22.0 (tidyverse and pheatmap: versions not stated) |
 
 Versions of `vg`, `vcfwave`, ODGI, PLINK and Snakemake are not stated in the manuscript; `TODO(author)` to add them here.
 

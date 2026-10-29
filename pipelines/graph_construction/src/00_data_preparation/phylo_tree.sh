@@ -83,13 +83,10 @@ dist_out="tree/combined_distance.tsv"
 mash dist "$combined" "$combined" > "$dist_out"
 
 # ==========================================
-# 5. Phylogenetic tree / heatmap (NJ with ape)
+# 5. Phylogenetic tree and heatmap (R)
 # ==========================================
-# The R script used for the tree and Figure 1 (phylo_tree_assembly.R) is not yet
-# part of this repository (see docs/MANUSCRIPT_MAP.md).
-#echo "[INFO] Generating visualization..."
-#Rscript phylo_tree_assembly.R \
-#    --input "$dist_out" \
-#    --out_dir tree
+# Run afterwards (R with tidyverse, ape and pheatmap):
+#   Rscript src/00_data_preparation/phylo_tree_assembly.R tree/combined_distance.tsv tree   # NJ tree
+#   Rscript src/08_figures/mash_distances.R tree/combined_distance.tsv tree                 # Figure 1
 
 echo "[INFO] Pipeline finished successfully."

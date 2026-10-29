@@ -38,7 +38,13 @@ python src/00_data_preparation/reconstruct_pansn.py in.fasta.gz out.fasta.gz [ga
 
 # Mash distances (SLURM; set REF_FASTA, ZEB_DIR, NEL_DIR first)
 sbatch src/00_data_preparation/phylo_tree.sh
+
+# NJ tree and Figure 1 (R: tidyverse, ape, pheatmap), run where tree/ was created
+Rscript src/00_data_preparation/phylo_tree_assembly.R tree/combined_distance.tsv tree
+Rscript src/08_figures/mash_distances.R tree/combined_distance.tsv tree
 ```
+
+The R scripts shorten the assembly names by matching the file names of the Zenodo assemblies (for example `BRAGUZ_M_07_`, `COWADAPT_005`).
 
 ## Step 01: graph construction
 

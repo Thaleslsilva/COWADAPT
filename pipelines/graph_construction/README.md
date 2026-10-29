@@ -10,7 +10,7 @@ The pipeline builds a multi-assembly pangenome graph from thirteen long-read ind
 
 | Step | Folder | What it does | Main tools |
 |------|--------|--------------|------------|
-| 00 | `src/00_data_preparation` | PanSN contig renaming, Mash distances (guide tree input) | Mash, awk, samtools |
+| 00 | `src/00_data_preparation` | PanSN contig renaming, Mash distances, NJ guide tree | Mash, R (ape), awk, samtools |
 | 01 | `src/01_graph_construction` | Minigraph-Cactus graph construction | Cactus |
 | 02 | `src/02_graph_statistics` | Graph size, NR sequence, sample intersections, core/accessory/private genome, per-breed sharing | ODGI, awk, Python |
 | 03 | `src/03_sv_discovery` | Graph deconstruction to VCF and SV/small-variant split | vg, vcfbub, vcfwave, BCFtools, Snakemake |
@@ -18,7 +18,7 @@ The pipeline builds a multi-assembly pangenome graph from thirteen long-read ind
 | 05 | `src/05_nr_sequences` | NR insertion extraction, clustering, repeat masking, non-repetitive blocks | CD-HIT, RepeatModeler, RepeatMasker, bedtools |
 | 06 | `src/06_functional_annotation` | Homology search, ab initio gene models, GO/KEGG annotation | DIAMOND, Augustus, eggNOG-mapper |
 | 07 | `src/07_candidate_genes` | Presence/absence matrix and candidate gene screen | Python (R pending) |
-| 08 | `src/08_figures` | Figure scripts | Pending |
+| 08 | `src/08_figures` | Figure scripts | R (Figure 1); the others are pending |
 
 `src/utils/` holds helpers (Zenodo upload). Step-by-step instructions are in [docs/USAGE.md](docs/USAGE.md) and the data flow is in [docs/PIPELINE_OVERVIEW.md](docs/PIPELINE_OVERVIEW.md).
 

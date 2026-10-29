@@ -39,9 +39,11 @@ dependencies:
   - pysam
   - biopython
   - requests
-  # R packages (R scripts are pending, see docs/MANUSCRIPT_MAP.md)
+  # R packages (Mash scripts included; enrichment and candidate scripts pending, see docs/MANUSCRIPT_MAP.md)
   - r-base
   - r-ape
+  - r-tidyverse
+  - r-pheatmap
   - bioconductor-clusterprofiler
   - bioconductor-org.bt.eg.db
   - pip
