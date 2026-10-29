@@ -8,6 +8,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Added
+- `pipelines/graph_construction`: companion code for the indicine pangenome manuscript, organized in numbered steps (`src/00_data_preparation` to `src/08_figures`) with central configuration (`config/`), a manuscript-to-code map (`docs/MANUSCRIPT_MAP.md`), usage, data-source and installation guides
+- Experimental Snakemake pipelines for the ODGI and core/accessory/private analyses (validated with `snakemake -n` only)
+
+### Changed
+- `pipelines/graph_construction`: scripts translated to English; hardcoded server paths replaced by configuration or arguments
+
 ---
 
 ## [0.2.0] — 2026-07-24

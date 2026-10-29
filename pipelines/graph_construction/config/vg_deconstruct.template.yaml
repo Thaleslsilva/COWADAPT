@@ -1,0 +1,17 @@
+# TEMPLATE for the Snakemake configuration read by src/03_sv_discovery/vg_deconstruct.smk.
+# Copy to config/vg_deconstruct.yaml (used by par_run.sh) and fill in the values.
+# Values below are placeholders: the YAML used for the manuscript is not in this repository.
+
+graph_path: CHANGE_ME          # directory with <prefix>_final.gfa per chromosome
+ref_ID: CHANGE_ME              # reference path name passed to `vg deconstruct -P`
+                               # (par_run.sh overrides it per chromosome with --config)
+prefixes: []                   # read by `rule all`; par_run.sh passes `prefix` per chromosome
+ref_path: CHANGE_ME            # reference FASTA used by `bcftools norm -f`
+rename_chroms: true            # strip the 'ARS_UCD2#0#' prefix before bcftools norm
+skip_size: CHANGE_ME           # vcfwave -L
+deconstruction_cpu: CHANGE_ME
+deconstruction_mem: CHANGE_ME
+deconstruction_time: CHANGE_ME
+default_cpu: CHANGE_ME
+default_mem: CHANGE_ME
+default_time: CHANGE_ME

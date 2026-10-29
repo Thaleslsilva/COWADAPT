@@ -1,0 +1,266 @@
+"""
+Snakemake conversion of 2.odgi_pipeline.sh and 3.CoreFlex_analysis.sh.
+
+EXPERIMENTAL: validated with `snakemake -n` only and not used to generate the
+manuscript results. The shell scripts are the reference implementation.
+
+Usage:
+    cd <workdir>/post_pangenome/scripts   # then pass -s <path to this Snakefile>
+    snakemake -n                  # dry run
+    snakemake --cores <N>         # run the default targets
+    snakemake --cores <N> stats   # run a rule not in the default target
+"""
+
+import os
+
+configfile: os.path.join(workflow.basedir, "../../../../config/workflow.yaml")
+
+PREFIX = config["pangenome_prefix"]
+THREADS = config["threads"]
+BED_FILE = config.get("pav_bed_file")
+
+# ============================================================
+# Default targets: only the commands that are active (uncommented)
+# in the original 2.odgi_pipeline.sh and 3.CoreFlex_analysis.sh.
+# ============================================================
+default_targets = [
+    f"{PREFIX}.sorted.og",
+    "node_depth.tsv",
+    "genome_similarity.tsv",
+    f"{PREFIX}.norm.og",
+    "compact_graph.gfa",
+    "nodes.tsv",
+    "core_analysis/core_genome_size.txt",
+]
+if BED_FILE:
+    default_targets.append("pav.tsv")
+
+rule all:
+    input:
+        default_targets
+
+
+# ============================================================
+# ODGI graph rules (from 2.odgi_pipeline.sh)
+# ============================================================
+
+rule sort:
+    input:
+        f"../{PREFIX}.og"
+    output:
+        f"{PREFIX}.sorted.og"
+    shell:
+        "odgi sort -i {input} -o {output} -t {THREADS} -P"
+
+rule stats:
+    input:
+        f"{PREFIX}.sorted.og"
+    output:
+        "graph_stats.txt"
+    shell:
+        "odgi stats -i {input} -S > {output}"
+
+rule paths_list:
+    input:
+        f"{PREFIX}.sorted.og"
+    output:
+        "path_id.tsv"
+    shell:
+        "odgi paths -i {input} -L > {output}"
+
+rule node_matrix:
+    input:
+        f"{PREFIX}.sorted.og"
+    output:
+        "node_matrix.tsv"
+    shell:
+        "odgi matrix -i {input} -t {THREADS} > {output}"
+
+rule depth:
+    input:
+        f"{PREFIX}.sorted.og"
+    output:
+        "node_depth.tsv"
+    shell:
+        "odgi depth -i {input} -t {THREADS} > {output}"
+
+rule degree:
+    input:
+        f"{PREFIX}.sorted.og"
+    output:
+        "conect_dist.tsv"
+    shell:
+        "odgi degree -i {input} -t {THREADS} > {output}"
+
+rule pav:
+    input:
+        graph=f"{PREFIX}.sorted.og",
+        bed=BED_FILE if BED_FILE else []
+    output:
+        "pav.tsv"
+    shell:
+        "odgi pav -i {input.graph} -t {THREADS} -b {input.bed} > {output}"
+
+rule similarity:
+    input:
+        f"{PREFIX}.sorted.og"
+    output:
+        "genome_similarity.tsv"
+    shell:
+        "odgi similarity -i {input} -t {THREADS} > {output}"
+
+rule normalize:
+    input:
+        f"{PREFIX}.sorted.og"
+    output:
+        f"{PREFIX}.norm.og"
+    shell:
+        # Original script hardcoded "graph.sorted.og"/"graph.norm.og" here;
+        # using the configured prefix consistently fixes that inconsistency.
+        "odgi normalize -i {input} -o {output}"
+
+rule edge_matrix:
+    input:
+        f"{PREFIX}.sorted.og"
+    output:
+        "edge_matrix.tsv"
+    shell:
+        "odgi matrix -i {input} -e -t {THREADS} > {output}"
+
+rule edge_matrix_P:
+    input:
+        f"{PREFIX}.sorted.og"
+    output:
+        "edge_matrixP.tsv"
+    shell:
+        "odgi matrix -i {input} -e -t {THREADS} -P > {output}"
+
+rule export_gfa:
+    input:
+        f"{PREFIX}.sorted.og"
+    output:
+        "compact_graph.gfa"
+    shell:
+        "odgi view -i {input} -g > {output}"
+
+rule extract_s_lines:
+    input:
+        "compact_graph.gfa"
+    output:
+        "nodes.tsv"
+    shell:
+        'grep "^S" {input} > {output}'
+
+
+# ============================================================
+# Core genome rules (from 3.CoreFlex_analysis.sh)
+# All outputs land under scripts/core_analysis/, matching the
+# original script's working directory.
+# ============================================================
+
+CORE_PATHS_FILE = "IND_analysis/ODGI/all_paths.txt"
+
+rule build_haplotype_map:
+    input:
+        CORE_PATHS_FILE
+    output:
+        "core_analysis/path_to_haplotype.tsv"
+    shell:
+        """
+        awk -F'#' '
+        {{
+          if ($1 ~ /_hap/) {{
+            hap = $1 "#" $2
+          }} else {{
+            hap = $1
+          }}
+          print $0 "\\t" hap
+        }}
+        ' {input} > {output}
+        """
+
+rule count_haplotypes:
+    input:
+        "core_analysis/path_to_haplotype.tsv"
+    output:
+        "core_analysis/haplotypes.txt"
+    shell:
+        "cut -f2 {input} | sort | uniq > {output}"
+
+rule node_haplotype_count:
+    input:
+        graph=f"{PREFIX}.sorted.og",
+        hap_map="core_analysis/path_to_haplotype.tsv"
+    output:
+        "core_analysis/node_haplotype_count.tsv"
+    shell:
+        """
+        odgi paths -i {input.graph} -N -t {THREADS} | \
+        awk '
+        NR==FNR {{
+          map[$1] = $2
+          next
+        }}
+        {{
+          hap = map[$2]
+          key = $1 "\\t" hap
+
+          if (!(key in seen)) {{
+            seen[key] = 1
+            count[$1]++
+          }}
+        }}
+        END {{
+          for (node in count) {{
+            print node, count[node]
+          }}
+        }}
+        ' {input.hap_map} - > {output}
+        """
+
+rule core_nodes:
+    input:
+        counts="core_analysis/node_haplotype_count.tsv",
+        haplotypes="core_analysis/haplotypes.txt"
+    output:
+        "core_analysis/core_nodes.txt"
+    shell:
+        """
+        N_HAPS=$(wc -l < {input.haplotypes})
+        awk -v N=$N_HAPS '$2 == N {{print $1}}' {input.counts} > {output}
+        """
+
+rule node_lengths:
+    input:
+        f"{PREFIX}.sorted.og"
+    output:
+        "core_analysis/node_length.tsv"
+    shell:
+        """
+        odgi view -i {input} -g | \
+        awk '$1=="S" {{print $2 "\\t" length($3)}}' > {output}
+        """
+
+rule core_genome_size:
+    input:
+        core_nodes="core_analysis/core_nodes.txt",
+        node_lengths="core_analysis/node_length.tsv"
+    output:
+        "core_analysis/core_genome_size.txt"
+    shell:
+        """
+        awk '
+        NR==FNR {{
+          core[$1] = 1
+          next
+        }}
+        {{
+          if ($1 in core) {{
+            sum += $2
+          }}
+        }}
+        END {{
+          print "Core genome size (bp):", sum
+        }}
+        ' {input.core_nodes} {input.node_lengths} > {output}
+        """

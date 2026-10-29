@@ -1,23 +1,49 @@
-name: pan_ind_artigo
+# Tools used by the graph_construction pipeline.
+# Versions are not pinned and this file has not been solved on a clean machine;
+# the versions used in the manuscript are listed in docs/install_guides/INSTALLATION.md.
+# Minigraph-Cactus is not installed here: use the official release or container.
+name: graph_construction
 channels:
   - conda-forge
   - bioconda
-  - defaults
 dependencies:
-  - python=3.10
+  - python>=3.10
   - snakemake
-  - cactus
+  # graph analysis and variant processing
   - odgi
   - vg
-  - augustus
-  - blast
+  - htslib
+  - bcftools
+  - samtools
+  - bedtools
+  - vcflib
+  - vcfbub
+  - plink
+  - plink2
+  # sequence tools
+  - mash
+  - seqkit
+  - seqtk
+  - pigz
+  - cd-hit
+  - trf
+  - repeatmodeler
   - repeatmasker
+  - diamond
+  - augustus
+  - eggnog-mapper
+  # Python packages
   - pandas
   - numpy
   - matplotlib
   - pysam
   - biopython
+  - requests
+  # R packages (R scripts are pending, see docs/MANUSCRIPT_MAP.md)
+  - r-base
+  - r-ape
+  - bioconductor-clusterprofiler
+  - bioconductor-org.bt.eg.db
   - pip
   - pip:
       - upsetplot
-      - requests

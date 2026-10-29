@@ -1,0 +1,15 @@
+assembly_id	breed	sex	sample_type	sequencing	autosomes_mb	n_contigs	contig_n50_mb	busco_complete_pct	source	zenodo_file
+ARS-UCD2.0	Hereford (taurine reference)	F	Blood	PacBio CLR	2489	2343	26.40	98.80	NCBI GCF_002263795.3	-
+Nelore_005	Nelore	M	Semen	ONT	2562	9807	2.40	98.60	this study	COWADAPT_Nelore_005.fasta.gz
+Nelore_010	Nelore	M	Semen	ONT	2552	9200	5.21	98.40	this study	COWADAPT_Nelore_010.fasta.gz
+Nelore_011	Nelore	M	Semen	ONT	2564	8116	3.10	98.80	this study	COWADAPT_Nelore_011.fasta.gz
+Nelore_017	Nelore	M	Semen	ONT	2533	6995	8.02	99.00	this study	COWADAPT_Nelore_017.fasta.gz
+Nelore_019	Nelore	M	Semen	ONT	2529	9123	19.76	99.10	this study	COWADAPT_Nelore_019.fasta.gz
+Nelore_020	Nelore	M	Semen	ONT	2541	6823	7.02	99.00	this study	COWADAPT_Nelore_020.fasta.gz
+Gyr	Gyr	F	Blood	PacBio HiFi	2485	941	76.72	96.27	ETH Zurich (Pausch group)	SxGCHEF120170207244_Gyr.fasta.gz
+Guzerat.hap1	Guzerat	M	Blood	PacBio HiFi	2469	698	71.76	97.42	ETH Zurich (Pausch group)	BRAGUZ_M_07_Guzerat.hap1.fasta.gz
+Guzerat.hap2	Guzerat	M	Blood	PacBio HiFi	2459	624	100.35	99.11	ETH Zurich (Pausch group)	BRAGUZ_M_07_Guzerat.hap2.fasta.gz
+Sindi.hap1	Sindi	F	Blood	PacBio HiFi	2480	745	84.44	99.49	ETH Zurich (Pausch group)	BRASIN_F_08_Sindi.hap1.fasta.gz
+Sindi.hap2	Sindi	F	Blood	PacBio HiFi	2483	671	94.17	99.53	ETH Zurich (Pausch group)	BRASIN_F_08_Sindi.hap2.fasta.gz
+Tabapua.hap1	Tabapua	F	Blood	PacBio HiFi	2481	714	90.59	96.91	ETH Zurich (Pausch group)	BRATAB_F_8423_Tabapua.hap1.fasta.gz
+Tabapua.hap2	Tabapua	F	Blood	PacBio HiFi	2443	610	49.43	99.62	ETH Zurich (Pausch group)	BRATAB_F_8423_Tabapua.hap2.fasta.gz
